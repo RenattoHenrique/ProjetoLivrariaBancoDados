@@ -5,9 +5,10 @@ import Formatação_cores
 import Apresentação
 import Final
 
-conexao = mysql.connector.connect(host = "localhost", password = "", user = "root", database = "livraria", port = "3307")
+conexao = mysql.connector.connect(host = "localhost", password = "", user = "root", database = "livraria", port = "3306")
 cursor = conexao.cursor()
 
+#Rai
 def CadastrarLivro():
     os.system("cls")
     print("Insira os dados do novo livro:")
@@ -96,52 +97,8 @@ def ListarEstoque():
     input()
     Menu()
 
-def CadastrarCliente():
-    os.system("cls")
-    print("Insira os dados do novo cliente:")
-    nome = input("Nome: ")
-    if nome.lower() == "sair":
-        Menu()
-    telefone = input("Telefone (11 dígitos): ")
-    if telefone.lower() == "sair":
-        Menu()
-    email = input("E-mail: ")
-    if email.lower() == "sair":
-        Menu()
-    if not nome or not telefone or not email or len(telefone) != 11:
-        print("\033[31mDados inválidos. Verifique os dados e tente novamente.\033[m")
-        input()
-        return CadastrarCliente()
-    try:
-        cursor.execute(f"INSERT INTO cliente (nome, telefone, email) VALUES ('{nome}', '{telefone}', '{email}')")
-        conexao.commit()
-        print("\033[32mCadastro registrado com sucesso.\033[m")
-    except:
-        print("\033[31mNão foi possível registrar o cadastro. Verifique os dados e tente novamente.\033[m")
-    input()
-    Menu()
 
-def ListarClientes():
-    os.system("cls")
-    cursor.execute("SELECT * FROM cliente")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print("\033[31mNão há registros.\033[m")
-        input()
-        Menu()
-    print("="*50)
-    print("Clientes cadastrados")
-    print("="*50)
-    for linha in resultado:
-        print(f"ID: {linha[0]}")
-        print(f"Nome: {linha[1]}")
-        print(f"Telefone: {linha[2]}")
-        print(f"E_mail: {linha[3]}\n")
-        print("-"*50)
-    print("\033[32mListagem Concluída com sucesso.\033[m")
-    input()
-    Menu()
-
+#Renato
 def ComprarLivros():
     os.system("cls")
     id_livro = input("Insira o ID do livro a ser comprado: ")
@@ -186,6 +143,35 @@ def ComprarLivros():
     except:
         print("\033[31mNão foi possível registrar a compra. verifique os dados e tente novamente.\033[m")
         input()
+    Menu()
+
+def ListarCompras():
+    os.system("cls")
+    cursor.execute("SELECT c.id, l.id, l.titulo, c.quantidade, c.data_compra, c.custo FROM compra as c JOIN livro as l ON c.id_livro = l.id")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print("\033[31mNão há registro.\033[m")
+        input()
+        Menu()
+    print("="*50)
+    print("REGISTRO DE COMPRAS")
+    print("="*50)
+    for linha in resultado:
+        id = linha[0]
+        id_livro = linha[1]
+        titulo = linha[2]
+        quantidade = linha[3]
+        data_compra = linha[4]
+        custo = linha[5]
+        print(f"ID da compra: {id}")
+        print(f"ID do livro: {id_livro}")
+        print(f"Livro: {titulo}")
+        print(f"Quantidade comprada: {quantidade}")
+        print(f"Data da compra: {data_compra}")
+        print(f"Custo total: {custo}R$\n")
+        print("-"*50)
+    print("\033[32mListagem concluída com sucesso.\033[m")
+    input()
     Menu()
 
 def VenderLivros():
@@ -257,6 +243,237 @@ def VenderLivros():
     except:
         print("\033[32mNão foi possível registrar a venda. verifique os dados e tente novamente.\033[m")
         input()
+    Menu()
+
+def ListarVendas():
+    os.system("cls")
+    cursor.execute("SELECT v.id, l.id, c.id, l.titulo, c.nome, v.quantidade, v.lucro FROM venda AS v JOIN livro AS l ON v.id_livro = l.id JOIN cliente AS c ON v.id_cliente = c.id ")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print("\033[31mNão há registro.\033[m")
+        input()
+        Menu()
+    print("="*50)
+    print("LISTA DE VENDAS")
+    print("="*50)
+    for linha in resultado:
+        v_id = linha[0]
+        l_id = linha[1]
+        c_id = linha[2]
+        l_titulo = linha[3]
+        c_nome = linha[4]
+        v_quantidade = linha[5]
+        v_lucro = linha[6]
+        print(f"ID da venda: {v_id}")
+        print(f"ID do livro: {l_id}")
+        print(f"ID do cliente: {c_id}")
+        print(f"Livro: {l_titulo}")
+        print(f"Ciente: {c_nome}")
+        print(f"Cópias vendidas: {v_quantidade}")
+        print(f"Lucro: {v_lucro}R$\n")
+        print("-"*50)
+    print("\033[32mListagem concluída com sucesso.\033[m")
+    input()
+    Menu()
+
+
+#João
+
+def RemoverLivro():
+    os.system("cls")
+    print("Insira o ID do livro a ser removido:")
+    id = input()
+    if not id:
+        RemoverLivro()
+    if id.lower() == "sair":
+        Menu()
+    cursor.execute(f"SELECT id, titulo, autor FROM livro WHERE id = {id}")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print(f"\033[31mERRO. Nenhum registro encontrado com o id {id}\033[m")
+        input()
+        return RemoverLivro()
+    print("\033[32mRegistro encontrado !\033[m")
+    print("-"*100)
+    print(f"{'ID':5}{'Título':30}{'Autor'}")
+    print("-"*100)
+    for linha in resultado:
+        id = linha[0]
+        titulo = linha[1]
+        autor = linha[2]
+        print(f"{id:<5}{titulo:20}{autor:21}")
+        print("-"*100)
+    print("Deseja realmente \033[31mexcluir\033[m esse registro ? S / N:")
+    opcao = input()
+    if opcao.lower() == "s":
+        try:
+            cursor.execute(f"DELETE FROM livro WHERE id = {id}")
+            conexao.commit()
+            print("\033[32mRegistro deletado com sucesso.\033[m")
+            input()
+            Menu()
+        except:
+            print("\031[32mNão foi possível deletar o cadastro por um erro sinistro.\031[m")
+            input("Tecle Enter para retornar ao menu: ")
+            Menu()
+    else:
+        Menu()
+
+def AtualizarLivro():
+    os.system("cls")
+    print("Insira o ID do livro a ser atualizado:")
+    id = input()
+    if not id:
+        AtualizarLivro()
+    if id.lower() == "sair":
+        Menu()
+    if id.lower() == "sair":
+        Menu()
+    cursor.execute(f"SELECT * FROM livro WHERE id = {id}")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print(f"\033[mERRO. Nenhum registro encontrado com o id {id}\033[m")
+        input()
+        return AtualizarLivro()
+    print("="*50)
+    print("\033[32mRegistro encontrado !\033[m")
+    print("="*50)
+    for linha in resultado:
+        print(f"ID: {linha[0]}")
+        print(f"Título: {linha[1]}")
+        print(f"Gênero: {linha[2]}")
+        print(f"Autor: {linha[3]}")
+        print(f"Publicação: {linha[4]}")
+        print(f"Sinopse: {linha[5]}")
+        print(f"Preço de compra: {linha[6]:.2f}R$")
+        print(f"Preço de Venda: {linha[7]:.2f}R$")
+        print("-"*50)
+    novoTitulo = input("Novo título: ")
+    novoGenero = input("Novo Gênero: ")
+    novoAutor = input("Novo autor: ")
+    novaPublicacao = input("Nova data de publicação (AAAA/MM/DD): ")
+    novaSinopse = input("Nova sinopse: ")
+    try:
+        novoValorCompra = float(input("Novo preço de compra: "))
+        novoValorVenda = float(input("Novo preço de revenda: "))
+    except ValueError:
+        print(f"\033[31mNenhum número inserido.\033[m")
+        input()
+        return AtualizarLivro()
+    if not novoTitulo or not novoGenero or not novoAutor or not novaPublicacao or not novaSinopse or not novoValorCompra or not novoValorVenda or len(novaPublicacao) != 10 or novoValorCompra < 0 or novoValorVenda < 0:
+        os.system("cls")
+        print("\033[31mDados inválidos. Verifique os dados e tente novamente.\033[m")
+        input()
+        Menu()
+    print("\033[33mCONFIRMAÇÃO:\033[m Deseja realmente Atualizar o registro atual ? S/N")
+    confirmacao = input()
+    if confirmacao.lower() == "s":
+        try:
+            cursor.execute(f"UPDATE livro SET titulo = '{novoTitulo}', genero = '{novoGenero}', autor = '{novoAutor}', publicacao = '{novaPublicacao}', sinopse = '{novaSinopse}', valor_Compra = '{novoValorCompra}', valor_revenda = '{novoValorVenda}' WHERE (id = {id})")
+            conexao.commit()
+            print("\033[32mRegistro Atualizado com sucesso.\033[m")
+        except:
+            print("\033[31mNão foi possível atualizar o registro devido a um erro sinistro.\033[m")
+    else:
+        os.system("cls")
+        print("\033[32mAtualização cancelada.\033[m")
+    input()
+    Menu()
+
+def CadastrarCliente():
+    os.system("cls")
+    print("Insira os dados do novo cliente:")
+    nome = input("Nome: ")
+    if nome.lower() == "sair":
+        Menu()
+    telefone = input("Telefone (11 dígitos): ")
+    if telefone.lower() == "sair":
+        Menu()
+    email = input("E-mail: ")
+    if email.lower() == "sair":
+        Menu()
+    if not nome or not telefone or not email or len(telefone) != 11:
+        print("\033[31mDados inválidos. Verifique os dados e tente novamente.\033[m")
+        input()
+        return CadastrarCliente()
+    try:
+        cursor.execute(f"INSERT INTO cliente (nome, telefone, email) VALUES ('{nome}', '{telefone}', '{email}')")
+        conexao.commit()
+        print("\033[32mCadastro registrado com sucesso.\033[m")
+    except:
+        print("\033[31mNão foi possível registrar o cadastro. Verifique os dados e tente novamente.\033[m")
+    input()
+    Menu()
+
+def ListarClientes():
+    os.system("cls")
+    cursor.execute("SELECT * FROM cliente")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print("\033[31mNão há registros.\033[m")
+        input()
+        Menu()
+    print("="*50)
+    print("Clientes cadastrados")
+    print("="*50)
+    for linha in resultado:
+        print(f"ID: {linha[0]}")
+        print(f"Nome: {linha[1]}")
+        print(f"Telefone: {linha[2]}")
+        print(f"E_mail: {linha[3]}\n")
+        print("-"*50)
+    print("\033[32mListagem Concluída com sucesso.\033[m")
+    input()
+    Menu()
+
+
+#Ademilson
+
+def AtualizarCliente():
+    os.system("cls")
+    print("Insira o ID do cliente a ser atualizado:")
+    id = input()
+    if not id:
+        AtualizarCliente()
+    if id.lower == "sair":
+        Menu()
+    cursor.execute(f"SELECT * FROM cliente WHERE id = {id}")
+    resultado = cursor.fetchall()
+    if len(resultado) == 0:
+        print(f"\033[31mERRO. Nenhum registro encontrado com o id {id}\033[m")
+        input()
+        AtualizarCliente()
+    print("\033[32mRegistro encontrado !\033[m")
+    print("-"*100)
+    print(f"{'ID':5}{'Nome':20}{'Telefone':21}{'E_mail'}")
+    print("-"*100)
+    for linha in resultado:
+        id = linha[0]
+        nome = linha[1]
+        telefone = linha[2]
+        email = linha[3]
+        print(f"{id:<5}{nome:20}{telefone:21}{email}")
+        print("-"*100)
+    newNome = input("Novo nome: ")
+    newTelefone = input("Novo Telefone (11 dígitos): ")
+    newEmail = input("Novo E-mail: ")
+    if not newNome or not newTelefone or not newEmail or len(newTelefone) != 11:
+        print("\033[31mDados inválidos. O registro não foi atualizado.\033[m")
+        input()
+        Menu()
+    print("\033[33mCONFIRMAÇÃO:\033[m Deseja realmente Atualizar o registro atual ? S/N")
+    confirmacao = input()
+    if confirmacao.lower() == "s":
+        try:
+            cursor.execute(f"UPDATE cliente SET nome = '{newNome}', telefone = '{newTelefone}', email = '{newEmail}' WHERE (id = {id})")
+            conexao.commit()
+            print("\033[32mRegistro Atualizado com sucesso.\033[m")
+        except:
+            print("\033[31mNão foi possível atualizar o registro devido a um erro sinistro.\033[m")
+    else:
+        os.system("cls")
+        print("\033[32mAtualização cancelada.\033[m")
+    input()
     Menu()
 
 def AdicionarAvaliacoes():
@@ -331,113 +548,8 @@ def VerificarAvaliacoes():
     input()
     Menu()
     
-def AtualizarCliente():
-    os.system("cls")
-    print("Insira o ID do cliente a ser atualizado:")
-    id = input()
-    if not id:
-        AtualizarCliente()
-    if id.lower == "sair":
-        Menu()
-    cursor.execute(f"SELECT * FROM cliente WHERE id = {id}")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print(f"\033[31mERRO. Nenhum registro encontrado com o id {id}\033[m")
-        input()
-        AtualizarCliente()
-    print("\033[32mRegistro encontrado !\033[m")
-    print("-"*100)
-    print(f"{'ID':5}{'Nome':20}{'Telefone':21}{'E_mail'}")
-    print("-"*100)
-    for linha in resultado:
-        id = linha[0]
-        nome = linha[1]
-        telefone = linha[2]
-        email = linha[3]
-        print(f"{id:<5}{nome:20}{telefone:21}{email}")
-        print("-"*100)
-    newNome = input("Novo nome: ")
-    newTelefone = input("Novo Telefone (11 dígitos): ")
-    newEmail = input("Novo E-mail: ")
-    if not newNome or not newTelefone or not newEmail or len(newTelefone) != 11:
-        print("\033[31mDados inválidos. O registro não foi atualizado.\033[m")
-        input()
-        Menu()
-    print("\033[33mCONFIRMAÇÃO:\033[m Deseja realmente Atualizar o registro atual ? S/N")
-    confirmacao = input()
-    if confirmacao.lower() == "s":
-        try:
-            cursor.execute(f"UPDATE cliente SET nome = '{newNome}', telefone = '{newTelefone}', email = '{newEmail}' WHERE (id = {id})")
-            conexao.commit()
-            print("\033[32mRegistro Atualizado com sucesso.\033[m")
-        except:
-            print("\033[31mNão foi possível atualizar o registro devido a um erro sinistro.\033[m")
-    else:
-        os.system("cls")
-        print("\033[32mAtualização cancelada.\033[m")
-    input()
-    Menu()
 
-def AtualizarLivro():
-    os.system("cls")
-    print("Insira o ID do livro a ser atualizado:")
-    id = input()
-    if not id:
-        AtualizarLivro()
-    if id.lower() == "sair":
-        Menu()
-    if id.lower() == "sair":
-        Menu()
-    cursor.execute(f"SELECT * FROM livro WHERE id = {id}")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print(f"\033[mERRO. Nenhum registro encontrado com o id {id}\033[m")
-        input()
-        return AtualizarLivro()
-    print("="*50)
-    print("\033[32mRegistro encontrado !\033[m")
-    print("="*50)
-    for linha in resultado:
-        print(f"ID: {linha[0]}")
-        print(f"Título: {linha[1]}")
-        print(f"Gênero: {linha[2]}")
-        print(f"Autor: {linha[3]}")
-        print(f"Publicação: {linha[4]}")
-        print(f"Sinopse: {linha[5]}")
-        print(f"Preço de compra: {linha[6]:.2f}R$")
-        print(f"Preço de Venda: {linha[7]:.2f}R$")
-        print("-"*50)
-    novoTitulo = input("Novo título: ")
-    novoGenero = input("Novo Gênero: ")
-    novoAutor = input("Novo autor: ")
-    novaPublicacao = input("Nova data de publicação (AAAA/MM/DD): ")
-    novaSinopse = input("Nova sinopse: ")
-    try:
-        novoValorCompra = float(input("Novo preço de compra: "))
-        novoValorVenda = float(input("Novo preço de revenda: "))
-    except ValueError:
-        print(f"\033[31mNenhum número inserido.\033[m")
-        input()
-        return AtualizarLivro()
-    if not novoTitulo or not novoGenero or not novoAutor or not novaPublicacao or not novaSinopse or not novoValorCompra or not novoValorVenda or len(novaPublicacao) != 10 or novoValorCompra < 0 or novoValorVenda < 0:
-        os.system("cls")
-        print("\033[31mDados inválidos. Verifique os dados e tente novamente.\033[m")
-        input()
-        Menu()
-    print("\033[33mCONFIRMAÇÃO:\033[m Deseja realmente Atualizar o registro atual ? S/N")
-    confirmacao = input()
-    if confirmacao.lower() == "s":
-        try:
-            cursor.execute(f"UPDATE livro SET titulo = '{novoTitulo}', genero = '{novoGenero}', autor = '{novoAutor}', publicacao = '{novaPublicacao}', sinopse = '{novaSinopse}', valor_Compra = '{novoValorCompra}', valor_revenda = '{novoValorVenda}' WHERE (id = {id})")
-            conexao.commit()
-            print("\033[32mRegistro Atualizado com sucesso.\033[m")
-        except:
-            print("\033[31mNão foi possível atualizar o registro devido a um erro sinistro.\033[m")
-    else:
-        os.system("cls")
-        print("\033[32mAtualização cancelada.\033[m")
-    input()
-    Menu()
+#Renan
 
 def RemoverCliente():
     os.system("cls")
@@ -479,106 +591,6 @@ def RemoverCliente():
             Menu()
     else:
         Menu()
-
-def RemoverLivro():
-    os.system("cls")
-    print("Insira o ID do livro a ser removido:")
-    id = input()
-    if not id:
-        RemoverLivro()
-    if id.lower() == "sair":
-        Menu()
-    cursor.execute(f"SELECT id, titulo, autor FROM livro WHERE id = {id}")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print(f"\033[31mERRO. Nenhum registro encontrado com o id {id}\033[m")
-        input()
-        return RemoverLivro()
-    print("\033[32mRegistro encontrado !\033[m")
-    print("-"*100)
-    print(f"{'ID':5}{'Título':30}{'Autor'}")
-    print("-"*100)
-    for linha in resultado:
-        id = linha[0]
-        titulo = linha[1]
-        autor = linha[2]
-        print(f"{id:<5}{titulo:20}{autor:21}")
-        print("-"*100)
-    print("Deseja realmente \033[31mexcluir\033[m esse registro ? S / N:")
-    opcao = input()
-    if opcao.lower() == "s":
-        try:
-            cursor.execute(f"DELETE FROM livro WHERE id = {id}")
-            conexao.commit()
-            print("\033[32mRegistro deletado com sucesso.\033[m")
-            input()
-            Menu()
-        except:
-            print("\031[32mNão foi possível deletar o cadastro por um erro sinistro.\031[m")
-            input("Tecle Enter para retornar ao menu: ")
-            Menu()
-    else:
-        Menu()    
-
-def ListarCompras():
-    os.system("cls")
-    cursor.execute("SELECT c.id, l.id, l.titulo, c.quantidade, c.data_compra, c.custo FROM compra as c JOIN livro as l ON c.id_livro = l.id")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print("\033[31mNão há registro.\033[m")
-        input()
-        Menu()
-    print("="*50)
-    print("REGISTRO DE COMPRAS")
-    print("="*50)
-    for linha in resultado:
-        id = linha[0]
-        id_livro = linha[1]
-        titulo = linha[2]
-        quantidade = linha[3]
-        data_compra = linha[4]
-        custo = linha[5]
-        print(f"ID da compra: {id}")
-        print(f"ID do livro: {id_livro}")
-        print(f"Livro: {titulo}")
-        print(f"Quantidade comprada: {quantidade}")
-        print(f"Data da compra: {data_compra}")
-        print(f"Custo total: {custo}R$\n")
-        print("-"*50)
-    print("\033[32mListagem concluída com sucesso.\033[m")
-    input()
-    Menu()
-
-def ListarVendas():
-    os.system("cls")
-    cursor.execute("SELECT v.id, l.id, c.id, l.titulo, c.nome, v.quantidade, v.lucro FROM venda AS v JOIN livro AS l ON v.id_livro = l.id JOIN cliente AS c ON v.id_cliente = c.id ")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print("\033[31mNão há registro.\033[m")
-        input()
-        Menu()
-    print("="*50)
-    print("LISTA DE VENDAS")
-    print("="*50)
-    for linha in resultado:
-        v_id = linha[0]
-        l_id = linha[1]
-        c_id = linha[2]
-        l_titulo = linha[3]
-        c_nome = linha[4]
-        v_quantidade = linha[5]
-        v_lucro = linha[6]
-        print(f"ID da venda: {v_id}")
-        print(f"ID do livro: {l_id}")
-        print(f"ID do cliente: {c_id}")
-        print(f"Livro: {l_titulo}")
-        print(f"Ciente: {c_nome}")
-        print(f"Cópias vendidas: {v_quantidade}")
-        print(f"Lucro: {v_lucro}R$\n")
-        print("-"*50)
-    print("\033[32mListagem concluída com sucesso.\033[m")
-    input()
-    Menu()
     
 def deletarAvaliacao():
     os.system("cls")
@@ -613,45 +625,6 @@ def deletarAvaliacao():
             input()
         Menu()
 
-def deletarCompra(): 
-    os.system("cls")
-    id = input("Insira o ID da compra a ser deletada: ")
-    if not id:
-        deletarCompra()
-    cursor.execute(f"SELECT * FROM compra WHERE id = {id}")
-    resultado = cursor.fetchall()
-    if len(resultado) == 0:
-        print(f"\033[31mNão há registro de compra registrada com o ID {id}\033[m")
-        input()
-        deletarCompra()
-    print("\033[32mRegistro de compra encontrado !\033[m")
-    print("-"*50)
-    for linha in resultado:
-        id = linha[0]
-        id_livro = linha[1]
-        titulo = linha[2]
-        quantidade = linha[3]
-        data_compra = linha[4]
-        custo = linha[5]
-        print(f"ID da compra: {id}")
-        print(f"ID do livro: {id_livro}")
-        print(f"Livro: {titulo}")
-        print(f"Quantidade comprada: {quantidade}")
-        print(f"Data da compra: {data_compra}")
-        print(f"Custo total: {custo}R$\n")
-        print("-"*50)
-    deletar = input("Você realmente deseja apagar esse registro ? (S/N): ")
-    if deletar.lower() == "s":
-        try:
-            cursor.execute(f"DELETE FROM avaliacao WHERE id = {id}")
-            conexao.commit()
-            print("\033[32mRegistro deletado com sucesso.\033[m")
-            input()
-        except:
-            print("\033[31mNão foi possível deletar o registro.\033[m")
-            input()
-        Menu()
-
 def EncerrarConexao():
     os.system("cls")
     try:
@@ -663,6 +636,8 @@ def EncerrarConexao():
         print("\033[31mNão foi possível encerrar a conexão. Tente novamente.\033[m")
         input()
         Menu()
+
+
 
 def Menu():  
     os.system("cls")
@@ -725,3 +700,49 @@ def Menu():
             continue       
 Apresentação.animacao_intro()  
 Menu()
+
+
+
+
+
+
+
+
+# def deletarCompra(): 
+#     os.system("cls")
+#     id = input("Insira o ID da compra a ser deletada: ")
+#     if not id:
+#         deletarCompra()
+#     cursor.execute(f"SELECT * FROM compra WHERE id = {id}")
+#     resultado = cursor.fetchall()
+#     if len(resultado) == 0:
+#         print(f"\033[31mNão há registro de compra registrada com o ID {id}\033[m")
+#         input()
+#         deletarCompra()
+#     print("\033[32mRegistro de compra encontrado !\033[m")
+#     print("-"*50)
+#     for linha in resultado:
+#         id = linha[0]
+#         id_livro = linha[1]
+#         titulo = linha[2]
+#         quantidade = linha[3]
+#         data_compra = linha[4]
+#         custo = linha[5]
+#         print(f"ID da compra: {id}")
+#         print(f"ID do livro: {id_livro}")
+#         print(f"Livro: {titulo}")
+#         print(f"Quantidade comprada: {quantidade}")
+#         print(f"Data da compra: {data_compra}")
+#         print(f"Custo total: {custo}R$\n")
+#         print("-"*50)
+#     deletar = input("Você realmente deseja apagar esse registro ? (S/N): ")
+#     if deletar.lower() == "s":
+#         try:
+#             cursor.execute(f"DELETE FROM avaliacao WHERE id = {id}")
+#             conexao.commit()
+#             print("\033[32mRegistro deletado com sucesso.\033[m")
+#             input()
+#         except:
+#             print("\033[31mNão foi possível deletar o registro.\033[m")
+#             input()
+#         Menu()
