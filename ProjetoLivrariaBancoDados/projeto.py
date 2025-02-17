@@ -50,7 +50,7 @@ def CadastrarLivro():
         print("\033[32mCadastro registrado com sucesso.\033[m")
     except:
         print("\033[31mNão foi possível registrar o cadastro. Verifique os dados e tente novamente.\033[m")
-    input()
+    input("\nDigite ENTER para retornar ao Menu...")
     Menu()
 
 def ListarLivros():
