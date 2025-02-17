@@ -15,7 +15,7 @@ def _speak(screen, text, pos, start):
         colour=Screen.COLOUR_CYAN,  
         clear=True,  
         start_frame=start,  
-        stop_frame=start + 50)  
+        stop_frame=start + 50)
 
 def cena_inicial(screen, centre, podium):  
     path = Path()  
@@ -28,7 +28,7 @@ def cena_inicial(screen, centre, podium):
     return [  
         Arrow(screen, path, colour=Screen.COLOUR_GREEN),  
         _speak(screen, "Bem-vindo à Bookland!", centre, 30),  
-        _speak(screen, "Oi, eu sou o João! Vou te mostrar o nosso ótimo software de gerenciamento para a Livraria.", podium, 110),  
+        _speak(screen, "Oi, sou Givanio! Vou mostrar nosso software de gerenciamento para livrarias.", podium, 115),  
     ]  
 
 def cena_funcionalidades(screen, podium, centre):  
@@ -52,7 +52,7 @@ def abertura(screen):
     # Cria as cenas
     scenes = [  
         Scene(cena_inicial(screen, centre, podium), 200),  
-        Scene(cena_funcionalidades(screen, podium, centre), 150),  # Tempo ajustado para incluir os 10 segundos finais  
+        Scene(cena_funcionalidades(screen, podium, centre), 200),  # Tempo ajustado para incluir os 10 segundos finais  
     ]  
 
     # Executa as cenas e força o término após 10 segundos de letreiro
@@ -67,3 +67,5 @@ def animacao_intro():
     finally:  
         # Animação finalizada após 10 segundos
         print("")
+
+animacao_intro()
