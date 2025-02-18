@@ -698,4 +698,6 @@ def Menu():
         else:  
             continue  
 
+# AnimacaoInicial.animacao_intro()
+
 Menu()
